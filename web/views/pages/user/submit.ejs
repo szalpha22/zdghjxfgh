@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Clip - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">Submit Clip</h1>
+    
+    <% if (campaigns.length === 0) { %>
+      <div class="bg-zinc-900 rounded-lg p-8 text-center">
+        <p class="text-gray-400 mb-4">You need to join a campaign before submitting clips</p>
+        <a href="/user/campaigns" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded inline-block">Browse Campaigns</a>
+      </div>
+    <% } else if (linkedAccounts.length === 0) { %>
+      <div class="bg-zinc-900 rounded-lg p-8 text-center">
+        <p class="text-gray-400 mb-4">You need to link and verify at least one social media account before submitting</p>
+        <a href="/user/accounts" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded inline-block">Link Account</a>
+      </div>
+    <% } else { %>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <form id="submitForm" class="space-y-6" enctype="multipart/form-data">
+          <div>
+            <label class="block text-sm font-medium mb-2">Select Campaign</label>
+            <select name="campaign_id" required class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+              <option value="">Choose a campaign...</option>
+              <% campaigns.forEach(campaign => { %>
+                <option value="<%= campaign.id %>"><%= campaign.name %> ($<%= campaign.rate_per_1k %>/1K views)</option>
+              <% }) %>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">Platform</label>
+            <select name="platform" required class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+              <option value="">Choose platform...</option>
+              <% linkedAccounts.forEach(account => { %>
+                <option value="<%= account.platform %>"><%= account.platform %> (@<%= account.account_handle %>)</option>
+              <% }) %>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">Video Link</label>
+            <input type="url" name="video_link" required placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+            <p class="text-xs text-gray-400 mt-1">Full URL to your clip (YouTube Shorts, TikTok, Instagram Reel)</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">Analytics Proof (Optional)</label>
+            <input type="file" name="analytics" accept="image/*,.pdf" class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+            <p class="text-xs text-gray-400 mt-1">Screenshot showing current view count</p>
+          </div>
+          
+          <button type="submit" class="w-full bg-[#E31E24] hover:bg-[#B91419] px-6 py-3 rounded font-semibold">Submit Clip</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+  
+  <script>
+    document.getElementById('submitForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      const response = await fetch('/user/submit', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+      
+      if (result.success) {
+        window.location.href = '/user/submissions';
+      }
+    });
+  </script>
+</body>
+</html>

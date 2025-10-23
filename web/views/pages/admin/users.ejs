@@ -1,0 +1,90 @@
+<%- include('../../partials/header', { user }) %>
+
+<%- include('../../partials/admin-nav', { currentPage: 'users' }) %>
+
+<div class="bg-zinc-950 text-gray-100 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-[#E31E24]">User Management</h1>
+      <form method="GET" class="mt-4">
+        <input type="text" name="search" placeholder="Search by User ID or Username" value="<%= search %>" class="bg-zinc-800 border border-zinc-700 rounded px-4 py-2 w-64 focus:border-[#E31E24] focus:outline-none">
+        <button type="submit" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded ml-2">Search</button>
+      </form>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-zinc-800">
+          <tr>
+            <th class="text-left py-3 px-4">Username</th>
+            <th class="text-left py-3 px-4">User ID</th>
+            <th class="text-left py-3 px-4">Balance</th>
+            <th class="text-left py-3 px-4">Status</th>
+            <th class="text-left py-3 px-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr class="border-b border-zinc-800">
+              <td class="py-3 px-4"><%= u.username %></td>
+              <td class="py-3 px-4 text-sm text-gray-400"><%= u.user_id %></td>
+              <td class="py-3 px-4 text-[#E31E24]">$<%= u.balance || 0 %></td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-1 rounded text-xs <%= u.banned ? 'bg-[#8B0F14]' : 'bg-[#E31E24]' %>">
+                  <%= u.banned ? 'Banned' : 'Active' %>
+                </span>
+              </td>
+              <td class="py-3 px-4">
+                <% if (u.banned) { %>
+                  <button onclick="unbanUser('<%= u.user_id %>')" class="text-[#E31E24] hover:text-[#FF4146] text-sm mr-2">Unban</button>
+                <% } else { %>
+                  <button onclick="banUser('<%= u.user_id %>')" class="text-[#E31E24] hover:text-[#FF4146] text-sm mr-2">Ban</button>
+                <% } %>
+                <button onclick="addBonus('<%= u.user_id %>')" class="text-[#E31E24] hover:text-[#FF4146] text-sm">Add Bonus</button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    async function banUser(userId) {
+      const reason = prompt('Reason for ban:');
+      const response = await fetch(`/admin/users/ban/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      });
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+    
+    async function unbanUser(userId) {
+      const response = await fetch(`/admin/users/unban/${userId}`, { method: 'POST' });
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+    
+    async function addBonus(userId) {
+      const amount = prompt('Bonus amount ($):');
+      const reason = prompt('Reason for bonus:');
+      if (!amount || !reason) return;
+      
+      const response = await fetch(`/admin/users/bonus/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, reason })
+      });
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+  </script>
+  </div>
+</div>
+
+<%- include('../../partials/footer', { user }) %>

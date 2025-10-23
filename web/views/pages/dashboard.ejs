@@ -1,0 +1,160 @@
+<%- include('../partials/header', { user }) %>
+
+<div class="container mx-auto px-6 py-12">
+  <!-- Header with Animation -->
+  <div class="slide-up mb-12">
+    <h1 class="text-5xl font-black mb-3">
+      <span class="gold-text">📊 Creator Dashboard</span>
+    </h1>
+    <p class="text-xl text-gray-400">Track your performance and earnings</p>
+  </div>
+  
+  <!-- Stats Grid with Hover Animations -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+    <div class="glass-card rounded-2xl p-8 slide-up delay-1 glow-hover">
+      <div class="text-5xl mb-4 float">📹</div>
+      <div class="text-4xl font-black mb-2 gold-text"><%= userStats.approved_clips || 0 %></div>
+      <div class="text-gray-400 text-lg">Approved Clips</div>
+      <div class="mt-4 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full gold-gradient shimmer" style="width: <%= Math.min(((userStats.approved_clips || 0) / 10) * 100, 100) %>%;"></div>
+      </div>
+    </div>
+    
+    <div class="glass-card rounded-2xl p-8 slide-up delay-2 glow-hover">
+      <div class="text-5xl mb-4 float" style="animation-delay: 0.3s;">👁️</div>
+      <div class="text-4xl font-black mb-2 gold-text"><%= (userStats.total_views || 0).toLocaleString() %></div>
+      <div class="text-gray-400 text-lg">Total Views</div>
+      <div class="mt-4 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full gold-gradient shimmer" style="width: <%= Math.min(((userStats.total_views || 0) / 100000) * 100, 100) %>%;"></div>
+      </div>
+    </div>
+    
+    <div class="glass-card rounded-2xl p-8 slide-up delay-3 glow-hover">
+      <div class="text-5xl mb-4 float" style="animation-delay: 0.6s;">💰</div>
+      <div class="text-4xl font-black mb-2 gold-text">$<%= (payoutStats.total_earned || 0).toFixed(2) %></div>
+      <div class="text-gray-400 text-lg">Total Earned</div>
+      <div class="mt-4 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full gold-gradient shimmer" style="width: <%= Math.min(((payoutStats.total_earned || 0) / 1000) * 100, 100) %>%;"></div>
+      </div>
+    </div>
+    
+    <div class="glass-card rounded-2xl p-8 slide-up delay-4 glow-hover">
+      <div class="text-5xl mb-4 float" style="animation-delay: 0.9s;">⏳</div>
+      <div class="text-4xl font-black mb-2 gold-text"><%= payoutStats.pending_payouts || 0 %></div>
+      <div class="text-gray-400 text-lg">Pending Payouts</div>
+      <div class="mt-4 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full gold-gradient shimmer" style="width: <%= Math.min(((payoutStats.pending_payouts || 0) / 5) * 100, 100) %>%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Linked Social Accounts -->
+  <% if (socialAccounts && socialAccounts.length > 0) { %>
+    <div class="slide-up delay-5 mb-16">
+      <h2 class="text-3xl font-bold mb-8 gold-text">🔗 Linked Accounts</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <% socialAccounts.forEach((account, index) => { %>
+          <div class="glass-card rounded-2xl p-6 glow-hover slide-up" style="animation-delay: <%= 0.5 + (index * 0.1) %>s;">
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-16 h-16 gold-gradient rounded-xl flex items-center justify-center text-3xl">
+                <% if (account.platform === 'YouTube') { %>📺<% } else if (account.platform === 'TikTok') { %>🎵<% } else { %>📸<% } %>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-bold"><%= account.platform %></h3>
+                <p class="text-sm text-gray-400"><%= account.account_handle %></p>
+              </div>
+            </div>
+            <% if (account.verification_status === 'verified') { %>
+              <div class="px-3 py-2 bg-red-500/20 text-[#E31E24] text-sm font-semibold rounded-lg flex items-center justify-center space-x-1">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span>Verified</span>
+              </div>
+            <% } else if (account.verification_status === 'pending_review') { %>
+              <div class="px-3 py-2 bg-red-500/20 text-[#E31E24] text-sm font-semibold rounded-lg text-center">⏳ Pending Review</div>
+            <% } else { %>
+              <div class="px-3 py-2 bg-gray-500/20 text-gray-400 text-sm font-semibold rounded-lg text-center">⚠️ Not Verified</div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+      <div class="mt-6 text-center">
+        <a href="/accounts" class="inline-flex items-center space-x-2 gold-text hover:opacity-80">
+          <span>Manage Accounts</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="slide-up delay-5 mb-16">
+      <div class="glass-card rounded-2xl p-12 text-center glow-hover">
+        <div class="text-6xl mb-4">🔗</div>
+        <h3 class="text-2xl font-bold mb-3">Link Your Social Accounts</h3>
+        <p class="text-gray-400 text-lg mb-6">Verify your YouTube, TikTok, or Instagram accounts to increase trust and unlock features</p>
+        <a href="/accounts" class="inline-flex items-center space-x-3 px-8 py-4 gold-gradient text-black font-bold text-lg rounded-xl btn-gold">
+          <span>Link Accounts</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Quick Actions with Beautiful Cards -->
+  <div class="slide-up delay-5">
+    <h2 class="text-3xl font-bold mb-8 gold-text">⚡ Quick Actions</h2>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <a href="/campaigns" class="group glass-card rounded-2xl p-10 text-center slide-up delay-6 glow-hover relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-40 h-40 gold-gradient opacity-20 rounded-full blur-3xl transform translate-x-20 -translate-y-20 group-hover:scale-150 transition-transform duration-500"></div>
+      <div class="relative z-10">
+        <div class="text-6xl mb-6 inline-block transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">🎬</div>
+        <h3 class="text-2xl font-bold mb-3">Join Campaigns</h3>
+        <p class="text-gray-400 text-lg leading-relaxed mb-6">Browse and join active campaigns to start earning</p>
+        <div class="inline-flex items-center space-x-2 gold-text font-semibold">
+          <span>Explore Now</span>
+          <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+    
+    <a href="/submissions" class="group glass-card rounded-2xl p-10 text-center slide-up delay-6 glow-hover relative overflow-hidden" style="animation-delay: 0.7s;">
+      <div class="absolute top-0 right-0 w-40 h-40 gold-gradient opacity-20 rounded-full blur-3xl transform translate-x-20 -translate-y-20 group-hover:scale-150 transition-transform duration-500"></div>
+      <div class="relative z-10">
+        <div class="text-6xl mb-6 inline-block transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300">📤</div>
+        <h3 class="text-2xl font-bold mb-3">Submit Clip</h3>
+        <p class="text-gray-400 text-lg leading-relaxed mb-6">Upload your latest content and start tracking views</p>
+        <div class="inline-flex items-center space-x-2 gold-text font-semibold">
+          <span>Upload Now</span>
+          <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+    
+    <a href="/payouts" class="group glass-card rounded-2xl p-10 text-center slide-up delay-6 glow-hover relative overflow-hidden" style="animation-delay: 0.8s;">
+      <div class="absolute top-0 right-0 w-40 h-40 gold-gradient opacity-20 rounded-full blur-3xl transform translate-x-20 -translate-y-20 group-hover:scale-150 transition-transform duration-500"></div>
+      <div class="relative z-10">
+        <div class="text-6xl mb-6 inline-block transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">💸</div>
+        <h3 class="text-2xl font-bold mb-3">Request Payout</h3>
+        <p class="text-gray-400 text-lg leading-relaxed mb-6">Withdraw your earnings when you're ready</p>
+        <div class="inline-flex items-center space-x-2 gold-text font-semibold">
+          <span>Request Now</span>
+          <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

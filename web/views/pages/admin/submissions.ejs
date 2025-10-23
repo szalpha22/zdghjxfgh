@@ -1,0 +1,112 @@
+<%- include('../../partials/header', { user }) %>
+
+<%- include('../../partials/admin-nav', { currentPage: 'submissions' }) %>
+
+<div class="bg-zinc-950 text-gray-100 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-6 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-[#E31E24]">Submission Management</h1>
+        <p class="text-gray-400">Review and approve clip submissions</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="?status=all" class="px-4 py-2 rounded <%= filter === 'all' ? 'bg-[#E31E24]' : 'bg-zinc-800' %>">All</a>
+        <a href="?status=pending" class="px-4 py-2 rounded <%= filter === 'pending' ? 'bg-[#E31E24]' : 'bg-zinc-800' %>">Pending</a>
+        <a href="?status=approved" class="px-4 py-2 rounded <%= filter === 'approved' ? 'bg-[#E31E24]' : 'bg-zinc-800' %>">Approved</a>
+        <a href="?status=rejected" class="px-4 py-2 rounded <%= filter === 'rejected' ? 'bg-[#E31E24]' : 'bg-zinc-800' %>">Rejected</a>
+      </div>
+    </div>
+    
+    <div class="space-y-4">
+      <% submissions.forEach(submission => { %>
+        <div class="bg-zinc-900 rounded-lg p-6">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="px-3 py-1 rounded text-sm <%= submission.status === 'approved' ? 'bg-[#E31E24]' : submission.status === 'pending' ? 'bg-red-500/30' : 'bg-[#8B0F14]' %>">
+                  <%= submission.status %>
+                </span>
+                <span class="text-gray-400">Campaign: <%= submission.campaign_name %></span>
+              </div>
+              <p class="text-lg font-semibold mb-2">User: <%= submission.username %></p>
+              <p class="text-gray-400 mb-2">Platform: <%= submission.platform %></p>
+              <a href="<%= submission.video_link %>" target="_blank" class="text-[#E31E24] hover:text-[#FF4146] break-all"><%= submission.video_link %></a>
+              <p class="text-gray-400 mt-2">Views: <%= submission.views || 'Not set' %></p>
+              <p class="text-xs text-gray-500 mt-2">Submitted: <%= new Date(submission.submitted_at).toLocaleString() %></p>
+              <% if (submission.analytics_proof) { %>
+                <a href="<%= submission.analytics_proof %>" target="_blank" class="text-[#E31E24] hover:text-[#FF4146] text-sm">View Analytics Proof</a>
+              <% } %>
+            </div>
+            
+            <% if (submission.status === 'pending') { %>
+              <div class="flex flex-col gap-2">
+                <input type="number" id="views-<%= submission.id %>" placeholder="Views" class="bg-zinc-800 border border-zinc-700 rounded px-3 py-1 w-32 focus:border-[#E31E24] focus:outline-none">
+                <button onclick="approveSubmission(<%= submission.id %>)" class="bg-[#E31E24] hover:bg-[#B91419] px-4 py-2 rounded text-sm">Approve</button>
+                <button onclick="rejectSubmission(<%= submission.id %>)" class="bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded text-sm">Reject</button>
+                <button onclick="flagSubmission(<%= submission.id %>)" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded text-sm">Flag</button>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+      
+      <% if (submissions.length === 0) { %>
+        <div class="bg-zinc-900 rounded-lg p-8 text-center text-gray-400">
+          No submissions found
+        </div>
+      <% } %>
+    </div>
+  </div>
+  
+  <script>
+    async function approveSubmission(id) {
+      const views = document.getElementById(`views-${id}`).value;
+      if (!views || views <= 0) {
+        alert('Please enter the current view count');
+        return;
+      }
+      
+      const response = await fetch(`/admin/submissions/approve/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ views: parseInt(views) })
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+    
+    async function rejectSubmission(id) {
+      const reason = prompt('Reason for rejection (optional):');
+      
+      const response = await fetch(`/admin/submissions/reject/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+    
+    async function flagSubmission(id) {
+      const reason = prompt('Reason for flagging:');
+      if (!reason) return;
+      
+      const response = await fetch(`/admin/submissions/flag/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+  </script>
+  </div>
+</div>
+
+<%- include('../../partials/footer', { user }) %>

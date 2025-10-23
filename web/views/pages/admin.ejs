@@ -1,0 +1,252 @@
+<%- include('../partials/header', { user }) %>
+
+<%- include('../partials/admin-nav', { currentPage: 'dashboard' }) %>
+
+<div class="container mx-auto px-6 py-12">
+  <h1 class="text-4xl font-bold mb-8 text-[#E31E24]">👑 Admin Dashboard</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+    <div class="card-dark rounded-xl p-6">
+      <div class="text-3xl mb-2">🎬</div>
+      <div class="text-2xl font-bold"><%= stats.campaigns.count %></div>
+      <div class="text-gray-400">Total Campaigns</div>
+    </div>
+    <div class="card-dark rounded-xl p-6">
+      <div class="text-3xl mb-2">📹</div>
+      <div class="text-2xl font-bold"><%= stats.submissions.count %></div>
+      <div class="text-gray-400">Total Submissions</div>
+    </div>
+    <div class="card-dark rounded-xl p-6">
+      <div class="text-3xl mb-2">💰</div>
+      <div class="text-2xl font-bold gold-text"><%= stats.payouts.count %></div>
+      <div class="text-gray-400">Pending Payouts</div>
+    </div>
+    <div class="card-dark rounded-xl p-6">
+      <div class="text-3xl mb-2">✅</div>
+      <div class="text-2xl font-bold gold-text"><%= stats.pendingVerifications.count %></div>
+      <div class="text-gray-400">Pending Verifications</div>
+    </div>
+  </div>
+
+  <!-- Database Reset (Developer Only) -->
+  <% if (user.id === process.env.DEVELOPER_ID) { %>
+  <div class="card-dark rounded-xl p-8 mb-8 border-2 border-[#E31E24]">
+    <h2 class="text-2xl font-bold mb-4 text-[#E31E24]">⚠️ Danger Zone</h2>
+    <p class="text-gray-400 mb-4">This will completely wipe the database and create a backup. Only use this if you know what you're doing.</p>
+    <button onclick="showResetModal()" class="px-6 py-3 bg-[#E31E24] hover:bg-[#B91419] text-white font-bold rounded-lg transition">
+      🗑️ Reset Database
+    </button>
+  </div>
+  <% } %>
+
+  <!-- Manual Verification Controls -->
+  <div class="card-dark rounded-xl p-8 mb-8">
+    <h2 class="text-2xl font-bold mb-6 gold-text">✏️ Manual Account Verification</h2>
+    <div class="bg-gray-900 rounded-lg p-6">
+      <p class="text-gray-400 mb-4">Manually verify or unverify a user's social media account</p>
+      <form id="manualVerifyForm" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block mb-2 font-semibold">User Discord ID</label>
+            <input type="text" name="user_id" required placeholder="123456789..." class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Platform</label>
+            <select name="platform" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+              <option value="">Select platform...</option>
+              <option value="YouTube">YouTube</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Instagram">Instagram</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Action</label>
+            <select name="action" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+              <option value="verify">✅ Verify</option>
+              <option value="unverify">❌ Unverify</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="px-6 py-3 gold-gradient text-black font-bold rounded-lg hover:opacity-90 transition">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pending Account Verifications -->
+  <% if (pendingVerifications && pendingVerifications.length > 0) { %>
+    <div class="card-dark rounded-xl p-8 mb-8">
+      <h2 class="text-2xl font-bold mb-6 gold-text">🔍 Pending Account Verifications</h2>
+      <p class="text-sm text-gray-400 mb-4">Note: All new accounts are automatically verified. These are accounts manually set to pending review.</p>
+      <div class="space-y-4">
+        <% pendingVerifications.forEach(verification => { %>
+          <div class="bg-gray-900 rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 gold-gradient rounded-lg flex items-center justify-center text-2xl">
+                  <% if (verification.platform === 'YouTube') { %>📺<% } else if (verification.platform === 'TikTok') { %>🎵<% } else { %>📸<% } %>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold"><%= verification.username %> - <%= verification.platform %></h3>
+                  <p class="text-gray-400"><%= verification.account_handle %></p>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <button onclick="verifyAccount(<%= verification.id %>)" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-[#E31E24] transition">
+                  ✅ Approve
+                </button>
+                <button onclick="rejectAccount(<%= verification.id %>)" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-[#E31E24] transition">
+                  ❌ Reject
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span class="text-gray-500">Verification Code:</span>
+                <span class="gold-text font-bold ml-2"><%= verification.verification_code %></span>
+              </div>
+              <div>
+                <span class="text-gray-500">Profile URL:</span>
+                <a href="<%= verification.account_url %>" target="_blank" class="text-blue-400 hover:text-blue-300 ml-2">View Profile →</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="card-dark rounded-xl p-8">
+    <h2 class="text-2xl font-bold mb-6">Quick Actions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <button onclick="alert('Feature coming soon!')" class="p-4 bg-gray-900 rounded-lg hover:bg-gray-800 transition text-left">
+        <div class="font-bold mb-1">Add Campaign</div>
+        <div class="text-sm text-gray-400">Create a new campaign</div>
+      </button>
+      <button onclick="alert('Feature coming soon!')" class="p-4 bg-gray-900 rounded-lg hover:bg-gray-800 transition text-left">
+        <div class="font-bold mb-1">Review Submissions</div>
+        <div class="text-sm text-gray-400">Approve or reject clips</div>
+      </button>
+      <button onclick="alert('Feature coming soon!')" class="p-4 bg-gray-900 rounded-lg hover:bg-gray-800 transition text-left">
+        <div class="font-bold mb-1">Process Payouts</div>
+        <div class="text-sm text-gray-400">Approve payout requests</div>
+      </button>
+      <button onclick="alert('Feature coming soon!')" class="p-4 bg-gray-900 rounded-lg hover:bg-gray-800 transition text-left">
+        <div class="font-bold mb-1">Export Data</div>
+        <div class="text-sm text-gray-400">Download reports as CSV</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Database Modal -->
+<div id="resetModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+  <div class="bg-gray-900 rounded-xl p-8 max-w-md w-full mx-4 border-2 border-[#E31E24]">
+    <h3 class="text-2xl font-bold mb-4 text-[#E31E24]">⚠️ Reset Database</h3>
+    <p class="text-gray-300 mb-4">This will permanently delete:</p>
+    <ul class="text-gray-400 mb-6 space-y-1">
+      <li>• All users and accounts</li>
+      <li>• All campaigns and submissions</li>
+      <li>• All payouts and tickets</li>
+      <li>• All leaderboard data</li>
+    </ul>
+    <p class="text-[#E31E24] mb-4">✅ A backup will be created before deletion</p>
+    <p class="text-gray-300 mb-4">Type <strong class="text-white">RESET DATABASE</strong> to confirm:</p>
+    <input 
+      type="text" 
+      id="resetConfirmation" 
+      class="w-full p-3 bg-gray-800 border border-[#E31E24] rounded-lg focus:border-[#E31E24] focus:outline-none mb-4"
+      placeholder="Type here..."
+    >
+    <div class="flex gap-4">
+      <button onclick="confirmReset()" class="flex-1 px-6 py-3 bg-[#E31E24] hover:bg-[#B91419] text-white font-bold rounded-lg transition">
+        Reset Database
+      </button>
+      <button onclick="closeResetModal()" class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('manualVerifyForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData);
+  
+  const endpoint = data.action === 'verify' 
+    ? `/admin/accounts/manual/verify` 
+    : `/admin/accounts/manual/unverify`;
+  
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: data.user_id, platform: data.platform })
+  });
+  
+  const result = await res.json();
+  alert(result.message);
+  if (result.success) {
+    e.target.reset();
+    window.location.reload();
+  }
+});
+
+async function verifyAccount(id) {
+  const res = await fetch(`/admin/accounts/verify/${id}`, { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) window.location.reload();
+}
+
+async function rejectAccount(id) {
+  if (!confirm('Are you sure you want to reject this verification?')) return;
+  const res = await fetch(`/admin/accounts/reject/${id}`, { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) window.location.reload();
+}
+
+function showResetModal() {
+  document.getElementById('resetModal').classList.remove('hidden');
+}
+
+function closeResetModal() {
+  document.getElementById('resetModal').classList.add('hidden');
+  document.getElementById('resetConfirmation').value = '';
+}
+
+async function confirmReset() {
+  const confirmation = document.getElementById('resetConfirmation').value;
+  
+  if (confirmation !== 'RESET DATABASE') {
+    alert('❌ Invalid confirmation phrase. Please type exactly: RESET DATABASE');
+    return;
+  }
+  
+  if (!confirm('⚠️ FINAL WARNING: This will DELETE ALL DATA including users, campaigns, submissions, and payouts. A backup will be created. Continue?')) {
+    return;
+  }
+  
+  const res = await fetch('/admin/database/reset', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ confirmation })
+  });
+  
+  const result = await res.json();
+  
+  if (result.success) {
+    alert(result.message + '\n\nBackup saved to: ' + result.backupPath);
+    window.location.href = '/auth/logout';
+  } else {
+    alert('❌ ' + result.message);
+  }
+  
+  closeResetModal();
+}
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,198 @@
+<%- include('../partials/header', { user }) %>
+
+<div class="container mx-auto px-6 py-12 max-w-4xl">
+  <% 
+    const platforms = JSON.parse(campaign.platforms || '[]');
+    const startDate = new Date(campaign.start_date);
+    const endDate = new Date(campaign.end_date);
+    const budgetPercent = campaign.total_budget ? Math.min((spentBudget / campaign.total_budget) * 100, 100) : 0;
+    const isLive = campaign.status === 'active';
+  %>
+  
+  <!-- Campaign Header -->
+  <div class="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-xl overflow-hidden border border-gray-700/50 shadow-xl">
+    <!-- Banner -->
+    <div class="relative h-40 bg-gradient-to-br from-[#E31E24] via-[#B91419] to-[#8B0F14] flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0 opacity-20">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-pulse"></div>
+      </div>
+      
+      <% if (isLive) { %>
+        <div class="absolute top-4 right-4 px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-full flex items-center gap-2 shadow-lg">
+          <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          Live
+        </div>
+      <% } %>
+      
+      <div class="relative z-10 w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-xl">
+        <span class="text-4xl">🎬</span>
+      </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="p-8">
+      <h1 class="text-3xl font-bold text-white mb-2"><%= campaign.name %></h1>
+      <p class="text-gray-400 text-lg mb-6"><%= campaign.description || 'No description provided' %></p>
+      
+      <!-- Badges -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="px-3 py-1 bg-blue-600/20 text-blue-400 text-sm font-medium rounded border border-blue-500/30">
+          <%= campaign.type || 'CPM Based' %>
+        </span>
+        <span class="px-3 py-1 bg-green-600/20 text-green-400 text-sm font-medium rounded border border-green-500/30">
+          <%= submissionCount %> Submissions
+        </span>
+        <% if (campaign.bonus_amount && campaign.bonus_amount > 0) { %>
+          <span class="px-3 py-1 bg-yellow-600/20 text-yellow-400 text-sm font-medium rounded border border-yellow-500/30">
+            💰 Bonus Available
+          </span>
+        <% } %>
+      </div>
+      
+      <!-- Campaign Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <span class="text-2xl">📱</span>
+          <div>
+            <p class="text-gray-500 text-sm">Platform</p>
+            <p class="text-white font-semibold"><%= platforms.join(', ') || 'Multiple' %></p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <span class="text-2xl">🕐</span>
+          <div>
+            <p class="text-gray-500 text-sm">Starts</p>
+            <p class="text-white font-semibold"><%= startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) %>, <%= startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %></p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <span class="text-2xl">📅</span>
+          <div>
+            <p class="text-gray-500 text-sm">Ends</p>
+            <p class="text-white font-semibold"><%= endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) %>, <%= endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %></p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <span class="text-2xl">👥</span>
+          <div>
+            <p class="text-gray-500 text-sm">Submissions</p>
+            <p class="text-white font-semibold"><%= submissionCount %></p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <span class="text-2xl">⏱️</span>
+          <div>
+            <p class="text-gray-500 text-sm">Contest Type</p>
+            <p class="text-white font-semibold"><%= campaign.type || 'CPM Based' %></p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <span class="text-2xl">💵</span>
+          <div>
+            <p class="text-gray-500 text-sm">CPM Rate</p>
+            <p class="text-green-400 font-semibold">$<%= campaign.rate_per_1k %> / 1k views</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50 md:col-span-2">
+          <span class="text-2xl">💰</span>
+          <div>
+            <p class="text-gray-500 text-sm">Total Budget</p>
+            <p class="text-white font-semibold"><%= campaign.total_budget ? '$' + campaign.total_budget.toFixed(2) : 'Unlimited' %></p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Budget Tracker -->
+      <% if (campaign.total_budget && campaign.total_budget > 0) { %>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-white mb-2">Budget Tracker</h3>
+          <div class="flex justify-between text-sm text-gray-400 mb-2">
+            <span>$<%= spentBudget.toFixed(2) %> / $<%= campaign.total_budget.toFixed(2) %></span>
+            <span><%= budgetPercent.toFixed(1) %>% used</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-[#E31E24] to-[#B91419] transition-all duration-500" style="width: <%= budgetPercent %>%"></div>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">$<%= (campaign.total_budget - spentBudget).toFixed(2) %> remaining</p>
+        </div>
+      <% } %>
+      
+      <!-- Requirements Section -->
+      <% if (campaign.requirements) { %>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-white mb-3">📋 Requirements</h3>
+          <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+            <p class="text-gray-300 whitespace-pre-line"><%= campaign.requirements %></p>
+          </div>
+        </div>
+      <% } %>
+      
+      <!-- Bonus Info -->
+      <% if (campaign.bonus_amount && campaign.bonus_amount > 0) { %>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-white mb-3">🎁 Bonus Information</h3>
+          <div class="bg-yellow-600/10 rounded-lg p-4 border border-yellow-500/30">
+            <p class="text-yellow-400 font-semibold text-lg mb-1">$<%= campaign.bonus_amount %> Bonus</p>
+            <% if (campaign.bonus_requirement) { %>
+              <p class="text-gray-300"><%= campaign.bonus_requirement %></p>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+      
+      <!-- Action Buttons -->
+      <% if (user) { %>
+        <div class="flex gap-4">
+          <% if (isLive && !isMember) { %>
+            <button onclick="joinCampaign()" class="flex-1 py-3 bg-gradient-to-r from-[#E31E24] to-[#B91419] hover:from-[#B91419] hover:to-[#8B0F14] text-white font-semibold rounded-lg transition duration-300 shadow-lg hover:shadow-[#E31E24]/50">
+              Join Campaign
+            </button>
+          <% } else if (isMember) { %>
+            <a href="/user/submit" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-center font-semibold rounded-lg transition duration-300 shadow-lg">
+              Submit Clip
+            </a>
+            <button onclick="leaveCampaign()" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition duration-300">
+              Leave Campaign
+            </button>
+          <% } %>
+        </div>
+      <% } else { %>
+        <a href="/login" class="block py-3 bg-gradient-to-r from-[#E31E24] to-[#B91419] hover:from-[#B91419] hover:to-[#8B0F14] text-white text-center font-semibold rounded-lg transition duration-300 shadow-lg">
+          Login to Join
+        </a>
+      <% } %>
+    </div>
+  </div>
+  
+  <!-- Back Button -->
+  <div class="mt-6">
+    <a href="/campaigns" class="text-gray-400 hover:text-white transition">
+      ← Back to All Campaigns
+    </a>
+  </div>
+</div>
+
+<script>
+async function joinCampaign() {
+  const res = await fetch('/campaigns/join/<%= campaign.id %>', { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) location.reload();
+}
+
+async function leaveCampaign() {
+  if (!confirm('Are you sure you want to leave this campaign?')) return;
+  const res = await fetch('/campaigns/leave/<%= campaign.id %>', { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) location.reload();
+}
+</script>
+
+<%- include('../partials/footer') %>

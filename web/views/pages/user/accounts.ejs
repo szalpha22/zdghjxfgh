@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Accounts - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">My Social Media Accounts</h1>
+    
+    <div class="bg-zinc-900 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Link New Account</h2>
+      <form id="linkAccountForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">Platform</label>
+          <select name="platform" required class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+            <option value="">Choose platform...</option>
+            <option value="YouTube">YouTube</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Instagram">Instagram</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Account Handle</label>
+          <input type="text" name="account_handle" required placeholder="@yourhandle" class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Account URL</label>
+          <input type="url" name="account_url" required placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+        </div>
+        <button type="submit" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded font-semibold">Link Account</button>
+      </form>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Linked Accounts</h2>
+      <% if (accounts.length > 0) { %>
+        <div class="space-y-4">
+          <% accounts.forEach(account => { %>
+            <div class="bg-zinc-800 rounded p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-lg font-bold mb-1"><%= account.platform %></h3>
+                  <p class="text-gray-400 mb-2">@<%= account.account_handle %></p>
+                  <a href="<%= account.account_url %>" target="_blank" class="text-[#E31E24] hover:text-[#FF4146] text-sm break-all"><%= account.account_url %></a>
+                  
+                  <% if (account.verification_status === 'pending' || account.verification_status === 'pending_review') { %>
+                    <div class="mt-3 bg-yellow-900/30 border border-yellow-600 rounded p-3">
+                      <p class="text-sm text-yellow-400 font-semibold mb-1">Verification Pending</p>
+                      <p class="text-xs text-gray-300 mb-2">Add this code to your <%= account.platform %> bio:</p>
+                      <code class="bg-zinc-900 px-2 py-1 rounded text-yellow-400"><%= account.verification_code %></code>
+                      <button onclick="verifyAccount(<%= account.id %>)" class="block mt-2 text-sm text-[#E31E24] hover:text-[#FF4146]">Submit for Verification</button>
+                    </div>
+                  <% } else if (account.verification_status === 'verified') { %>
+                    <p class="mt-2 text-green-400 text-sm">✅ Verified</p>
+                  <% } else if (account.verification_status === 'rejected') { %>
+                    <p class="mt-2 text-[#E31E24] text-sm">❌ Verification Rejected</p>
+                  <% } %>
+                </div>
+                
+                <button onclick="unlinkAccount(<%= account.id %>)" class="text-[#E31E24] hover:text-[#FF4146] text-sm">Unlink</button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="text-gray-400 text-center py-8">No linked accounts yet</p>
+      <% } %>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('linkAccountForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+      
+      const response = await fetch('/user/accounts/link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    });
+    
+    async function verifyAccount(id) {
+      const response = await fetch(`/user/accounts/verify/${id}`, { method: 'POST' });
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+    
+    async function unlinkAccount(id) {
+      if (!confirm('Are you sure you want to unlink this account?')) return;
+      
+      const response = await fetch(`/user/accounts/unlink/${id}`, { method: 'POST' });
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    }
+  </script>
+</body>
+</html>

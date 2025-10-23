@@ -1,0 +1,73 @@
+<%- include('../partials/header', { user }) %>
+
+<div class="container mx-auto px-6 py-12">
+  <h1 class="text-4xl font-bold mb-8 gold-text">💰 Payouts</h1>
+  
+  <div class="card-dark rounded-xl p-8 mb-8">
+    <h2 class="text-2xl font-bold mb-6">Request Payout</h2>
+    <form id="payoutForm" enctype="multipart/form-data">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label class="block mb-2 font-semibold">Amount ($)</label>
+          <input type="number" name="amount" step="0.01" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+        </div>
+        <div>
+          <label class="block mb-2 font-semibold">Payout Method</label>
+          <select name="payout_method" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+            <option value="PayPal">PayPal</option>
+            <option value="UPI">UPI</option>
+            <option value="Solana">Solana</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block mb-2 font-semibold">Analytics Proof</label>
+        <input type="file" name="proof" accept="image/*,video/*" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+      </div>
+      
+      <button type="submit" class="px-8 py-3 gold-gradient text-black font-bold rounded-lg hover:opacity-90 transition">
+        Request Payout
+      </button>
+    </form>
+  </div>
+
+  <div class="card-dark rounded-xl p-8">
+    <h2 class="text-2xl font-bold mb-6">Payout History</h2>
+    <div class="space-y-4">
+      <% payouts.forEach(payout => { %>
+        <div class="flex justify-between items-center p-4 bg-gray-900 rounded-lg">
+          <div>
+            <div class="font-semibold">$<%= payout.amount %></div>
+            <div class="text-sm text-gray-400"><%= payout.payout_method %></div>
+          </div>
+          <div>
+            <span class="px-3 py-1 rounded-full text-sm <%= payout.status === 'approved' ? 'bg-[#E31E24]' : payout.status === 'pending' ? 'bg-red-500/30 text-[#E31E24]' : 'bg-[#8B0F14]' %>">
+              <%= payout.status %>
+            </span>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('payoutForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  
+  const res = await fetch('/payouts/request', {
+    method: 'POST',
+    body: formData
+  });
+  
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) {
+    location.reload();
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Stats - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">My Statistics</h1>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total Views</p>
+        <p class="text-2xl font-bold text-[#E31E24]"><%= stats.totalViews.total.toLocaleString() %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Approved</p>
+        <p class="text-2xl font-bold text-[#E31E24]"><%= stats.approvedSubmissions.count %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Pending</p>
+        <p class="text-2xl font-bold text-yellow-500"><%= stats.pendingSubmissions.count %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Rank</p>
+        <p class="text-2xl font-bold text-[#E31E24]">#<%= rank.rank %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Balance</p>
+        <p class="text-2xl font-bold text-[#E31E24]">$<%= stats.balance.toFixed(2) %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total Earned</p>
+        <p class="text-2xl font-bold text-[#E31E24]">$<%= stats.totalEarnings.total.toFixed(2) %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Bonus</p>
+        <p class="text-2xl font-bold text-yellow-500">$<%= stats.bonusAmount.toFixed(2) %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Pending Payouts</p>
+        <p class="text-2xl font-bold text-yellow-500">$<%= stats.pendingPayouts.total.toFixed(2) %></p>
+      </div>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Submission History</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left py-2">Campaign</th>
+              <th class="text-left py-2">Platform</th>
+              <th class="text-left py-2">Views</th>
+              <th class="text-left py-2">Status</th>
+              <th class="text-left py-2">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% submissionHistory.forEach(sub => { %>
+              <tr class="border-b border-zinc-800">
+                <td class="py-2"><%= sub.campaign_name %></td>
+                <td class="py-2"><%= sub.platform %></td>
+                <td class="py-2"><%= sub.views || 'N/A' %></td>
+                <td class="py-2">
+                  <span class="px-2 py-1 rounded text-xs <%= sub.status === 'approved' ? 'bg-[#E31E24]' : sub.status === 'pending' ? 'bg-red-500/30' : 'bg-[#8B0F14]' %>">
+                    <%= sub.status %>
+                  </span>
+                </td>
+                <td class="py-2 text-sm text-gray-400"><%= new Date(sub.submitted_at).toLocaleDateString() %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Payout History</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left py-2">Amount</th>
+              <th class="text-left py-2">Method</th>
+              <th class="text-left py-2">Status</th>
+              <th class="text-left py-2">Requested</th>
+              <th class="text-left py-2">Processed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% payoutHistory.forEach(payout => { %>
+              <tr class="border-b border-zinc-800">
+                <td class="py-2 text-[#E31E24]">$<%= payout.amount %></td>
+                <td class="py-2"><%= payout.payout_method || 'N/A' %></td>
+                <td class="py-2">
+                  <span class="px-2 py-1 rounded text-xs <%= payout.status === 'approved' ? 'bg-[#E31E24]' : payout.status === 'pending' ? 'bg-red-500/30' : 'bg-[#8B0F14]' %>">
+                    <%= payout.status %>
+                  </span>
+                </td>
+                <td class="py-2 text-sm text-gray-400"><%= new Date(payout.requested_at).toLocaleDateString() %></td>
+                <td class="py-2 text-sm text-gray-400"><%= payout.processed_at ? new Date(payout.processed_at).toLocaleDateString() : '-' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

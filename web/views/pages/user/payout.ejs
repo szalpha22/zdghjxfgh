@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Payout - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">Request Payout</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Current Balance</p>
+        <p class="text-2xl font-bold text-[#E31E24]">$<%= (userInfo?.balance || 0).toFixed(2) %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Total Earned</p>
+        <p class="text-2xl font-bold text-[#E31E24]">$<%= (totalEarnings?.total || 0).toFixed(2) %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-4">
+        <p class="text-gray-400 text-sm">Pending Requests</p>
+        <p class="text-2xl font-bold text-yellow-500"><%= payouts.filter(p => p.status === 'pending').length %></p>
+      </div>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Request New Payout</h2>
+      <% if (!userInfo?.payout_method || !userInfo?.payout_address) { %>
+        <div class="bg-yellow-900/30 border border-yellow-600 rounded p-4 mb-4">
+          <p class="text-yellow-400">⚠️ Please set up your payout method in your profile first</p>
+          <a href="/user/profile" class="text-[#E31E24] hover:text-[#FF4146] text-sm">Go to Profile →</a>
+        </div>
+      <% } else { %>
+        <form id="payoutForm" class="space-y-4" enctype="multipart/form-data">
+          <div>
+            <label class="block text-sm font-medium mb-2">Amount ($)</label>
+            <input type="number" name="amount" step="0.01" min="5" max="<%= userInfo?.balance || 0 %>" required class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+            <p class="text-xs text-gray-400 mt-1">Minimum: $5.00 | Maximum: $<%= (userInfo?.balance || 0).toFixed(2) %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Payout Method</label>
+            <input type="text" value="<%= userInfo?.payout_method %> (<%= userInfo?.payout_address %>)" disabled class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 text-gray-400">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Proof of Work (Optional)</label>
+            <input type="file" name="proof" accept="image/*,video/*,.pdf" class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+            <p class="text-xs text-gray-400 mt-1">Upload clips compilation or screenshots</p>
+          </div>
+          <button type="submit" class="w-full bg-[#E31E24] hover:bg-[#B91419] px-6 py-3 rounded font-semibold">Request Payout</button>
+        </form>
+      <% } %>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Payout History</h2>
+      <% if (payouts.length > 0) { %>
+        <div class="space-y-3">
+          <% payouts.forEach(payout => { %>
+            <div class="bg-zinc-800 rounded p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-2xl font-bold text-[#E31E24]">$<%= payout.amount %></p>
+                  <p class="text-sm text-gray-400">Method: <%= payout.payout_method || 'N/A' %></p>
+                  <p class="text-xs text-gray-500 mt-1">Requested: <%= new Date(payout.requested_at).toLocaleString() %></p>
+                  <% if (payout.processed_at) { %>
+                    <p class="text-xs text-gray-500">Processed: <%= new Date(payout.processed_at).toLocaleString() %></p>
+                  <% } %>
+                  <% if (payout.rejection_reason) { %>
+                    <p class="text-[#E31E24] text-sm mt-2">Reason: <%= payout.rejection_reason %></p>
+                  <% } %>
+                </div>
+                <span class="px-3 py-1 rounded text-sm <%= payout.status === 'approved' ? 'bg-[#E31E24]' : payout.status === 'pending' ? 'bg-red-500/30' : 'bg-[#8B0F14]' %>">
+                  <%= payout.status %>
+                </span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="text-gray-400 text-center py-8">No payout requests yet</p>
+      <% } %>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('payoutForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      const response = await fetch('/user/payout/request', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+      if (result.success) window.location.reload();
+    });
+  </script>
+</body>
+</html>

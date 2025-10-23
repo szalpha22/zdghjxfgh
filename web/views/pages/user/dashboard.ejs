@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">Welcome, <%= user.username %>!</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Total Views</h3>
+        <p class="text-3xl font-bold text-[#E31E24]"><%= userStats.totalViews.total.toLocaleString() %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Approved Clips</h3>
+        <p class="text-3xl font-bold text-[#E31E24]"><%= userStats.approvedSubmissions.count %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Balance</h3>
+        <p class="text-3xl font-bold text-[#E31E24]">$<%= (userStats.balance.balance || 0).toFixed(2) %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Rank</h3>
+        <p class="text-3xl font-bold text-[#E31E24]">#<%= userStats.rank.rank %></p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h2 class="text-xl font-bold text-[#E31E24] mb-4">My Campaigns</h2>
+        <% if (joinedCampaigns.length > 0) { %>
+          <div class="space-y-3">
+            <% joinedCampaigns.forEach(campaign => { %>
+              <div class="bg-zinc-800 rounded p-4">
+                <h3 class="font-bold mb-1"><%= campaign.name %></h3>
+                <p class="text-sm text-gray-400">My Submissions: <%= campaign.my_submissions %></p>
+                <p class="text-sm text-[#E31E24]">Rate: $<%= campaign.rate_per_1k %>/1K views</p>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-gray-400 text-center py-8">You haven't joined any campaigns yet</p>
+          <a href="/campaigns" class="block text-center bg-[#E31E24] hover:bg-[#B91419] px-4 py-2 rounded mt-4">Browse Campaigns</a>
+        <% } %>
+      </div>
+      
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h2 class="text-xl font-bold text-[#E31E24] mb-4">Recent Submissions</h2>
+        <% if (recentSubmissions.length > 0) { %>
+          <div class="space-y-3">
+            <% recentSubmissions.forEach(sub => { %>
+              <div class="bg-zinc-800 rounded p-4">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-sm text-gray-400"><%= sub.campaign_name %></p>
+                    <p class="text-sm"><%= sub.platform %></p>
+                  </div>
+                  <span class="px-2 py-1 rounded text-xs <%= sub.status === 'approved' ? 'bg-[#E31E24]' : sub.status === 'pending' ? 'bg-red-500/30' : 'bg-[#8B0F14]' %>">
+                    <%= sub.status %>
+                  </span>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-gray-400 text-center py-8">No submissions yet</p>
+        <% } %>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="/user/submit" class="bg-[#E31E24] hover:bg-[#B91419] rounded-lg p-6 text-center">
+        <h3 class="text-xl font-bold mb-2">Submit Clip</h3>
+        <p class="text-sm text-gray-300">Upload your latest content</p>
+      </a>
+      <a href="/user/campaigns" class="bg-zinc-900 hover:bg-zinc-800 rounded-lg p-6 text-center">
+        <h3 class="text-xl font-bold mb-2">Browse Campaigns</h3>
+        <p class="text-sm text-gray-400">Find new opportunities</p>
+      </a>
+      <a href="/user/payout" class="bg-zinc-900 hover:bg-zinc-800 rounded-lg p-6 text-center">
+        <h3 class="text-xl font-bold mb-2">Request Payout</h3>
+        <p class="text-sm text-gray-400">Withdraw your earnings</p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

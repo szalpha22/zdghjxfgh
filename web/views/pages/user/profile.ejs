@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">My Profile</h1>
+    
+    <div class="bg-zinc-900 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Account Information</h2>
+      <div class="space-y-3">
+        <div>
+          <p class="text-gray-400 text-sm">Username</p>
+          <p class="text-lg font-semibold"><%= user.username %></p>
+        </div>
+        <div>
+          <p class="text-gray-400 text-sm">User ID</p>
+          <p class="text-sm text-gray-300"><%= user.id %></p>
+        </div>
+        <div>
+          <p class="text-gray-400 text-sm">Balance</p>
+          <p class="text-2xl font-bold text-[#E31E24]">$<%= (userInfo?.balance || 0).toFixed(2) %></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Payout Settings</h2>
+      <form id="payoutForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">Payout Method</label>
+          <select name="payout_method" class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+            <option value="">Select method...</option>
+            <option value="PayPal" <%= userInfo?.payout_method === 'PayPal' ? 'selected' : '' %>>PayPal</option>
+            <option value="Venmo" <%= userInfo?.payout_method === 'Venmo' ? 'selected' : '' %>>Venmo</option>
+            <option value="CashApp" <%= userInfo?.payout_method === 'CashApp' ? 'selected' : '' %>>Cash App</option>
+            <option value="Zelle" <%= userInfo?.payout_method === 'Zelle' ? 'selected' : '' %>>Zelle</option>
+            <option value="BankTransfer" <%= userInfo?.payout_method === 'BankTransfer' ? 'selected' : '' %>>Bank Transfer</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Payout Address/Handle</label>
+          <input type="text" name="payout_address" value="<%= userInfo?.payout_address || '' %>" placeholder="your@email.com or @handle" class="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-2 focus:border-[#E31E24] focus:outline-none">
+        </div>
+        <button type="submit" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded font-semibold">Save Payout Settings</button>
+      </form>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Linked Social Media Accounts</h2>
+      <% if (linkedAccounts.length > 0) { %>
+        <div class="space-y-3">
+          <% linkedAccounts.forEach(account => { %>
+            <div class="flex items-center justify-between bg-zinc-800 rounded p-3">
+              <div>
+                <p class="font-semibold"><%= account.platform %></p>
+                <p class="text-sm text-gray-400">@<%= account.account_handle %></p>
+              </div>
+              <span class="px-3 py-1 rounded text-xs <%= account.verification_status === 'verified' ? 'bg-green-600' : 'bg-yellow-600' %>">
+                <%= account.verification_status === 'verified' ? 'Verified' : 'Pending' %>
+              </span>
+            </div>
+          <% }) %>
+        </div>
+        <a href="/user/accounts" class="block text-center mt-4 text-[#E31E24] hover:text-[#FF4146]">Manage Accounts</a>
+      <% } else { %>
+        <p class="text-gray-400 text-center py-4">No linked accounts</p>
+        <a href="/user/accounts" class="block text-center bg-[#E31E24] hover:bg-[#B91419] px-4 py-2 rounded mt-4">Link Account</a>
+      <% } %>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('payoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+      
+      const response = await fetch('/user/profile/payout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      alert(result.message);
+    });
+  </script>
+</body>
+</html>

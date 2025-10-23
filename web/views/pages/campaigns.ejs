@@ -1,0 +1,146 @@
+<%- include('../partials/header', { user }) %>
+
+<div class="container mx-auto px-6 py-12">
+  <h1 class="text-4xl font-bold mb-8 gold-text">🎬 All Campaigns</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% campaigns.forEach(campaign => { 
+      const platforms = JSON.parse(campaign.platforms || '[]');
+      const totalSubmissions = campaign.total_submissions || 0;
+      const startDate = new Date(campaign.start_date);
+      const endDate = new Date(campaign.end_date);
+      const totalViews = campaign.total_views || 0;
+      const spentBudget = (totalViews / 1000) * campaign.rate_per_1k;
+      const budgetPercent = campaign.total_budget ? Math.min((spentBudget / campaign.total_budget) * 100, 100) : 0;
+      const isLive = campaign.status === 'active';
+    %>
+      <div class="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-xl overflow-hidden border border-gray-700/50 hover:border-[#E31E24]/50 transition duration-300 shadow-lg hover:shadow-[#E31E24]/20">
+        <!-- Campaign Header Banner -->
+        <div class="relative h-32 bg-gradient-to-br from-[#E31E24] via-[#B91419] to-[#8B0F14] flex items-center justify-center overflow-hidden">
+          <div class="absolute inset-0 opacity-20">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-pulse"></div>
+          </div>
+          
+          <!-- Live Badge -->
+          <% if (isLive) { %>
+            <div class="absolute top-3 right-3 px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full flex items-center gap-1 shadow-lg">
+              <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+              Live
+            </div>
+          <% } %>
+          
+          <!-- Submission Count Badge -->
+          <div class="absolute top-3 left-3 px-3 py-1 bg-black/40 backdrop-blur-sm text-white text-xs font-semibold rounded-full border border-white/20">
+            📊 <%= campaign.submissionCount %> Submissions
+          </div>
+          
+          <!-- Campaign Icon/Logo -->
+          <div class="relative z-10 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl">
+            <span class="text-3xl">🎬</span>
+          </div>
+        </div>
+        
+        <!-- Campaign Details -->
+        <div class="p-5">
+          <!-- Title & Description -->
+          <h3 class="text-lg font-bold text-white mb-2 line-clamp-1"><%= campaign.name %></h3>
+          <p class="text-sm text-gray-400 mb-4 line-clamp-2"><%= campaign.description || 'No description provided' %></p>
+          
+          <!-- Badges -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-blue-600/20 text-blue-400 text-xs font-medium rounded border border-blue-500/30">
+              <%= campaign.type || 'CPM Based' %>
+            </span>
+            <% if (campaign.bonus_amount && campaign.bonus_amount > 0) { %>
+              <span class="px-2 py-1 bg-yellow-600/20 text-yellow-400 text-xs font-medium rounded border border-yellow-500/30">
+                💰 Bonus Available
+              </span>
+            <% } %>
+          </div>
+          
+          <!-- Campaign Info Grid -->
+          <div class="space-y-2 mb-4 text-sm">
+            <!-- Platform -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">📱</span>
+              <span class="text-gray-500">Platform:</span>
+              <span class="font-medium"><%= platforms.join(', ') || 'Multiple' %></span>
+            </div>
+            
+            <!-- Start Date -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">🕐</span>
+              <span class="text-gray-500">Starts:</span>
+              <span class="font-medium"><%= startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) %>, <%= startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %></span>
+            </div>
+            
+            <!-- End Date -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">📅</span>
+              <span class="text-gray-500">Ends:</span>
+              <span class="font-medium"><%= endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) %>, <%= endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %></span>
+            </div>
+            
+            <!-- Submissions -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">👥</span>
+              <span class="text-gray-500">Submissions:</span>
+              <span class="font-medium"><%= campaign.submissionCount %></span>
+            </div>
+            
+            <!-- Contest Type -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">⏱️</span>
+              <span class="text-gray-500">Contest Type:</span>
+              <span class="font-medium"><%= campaign.type || 'CPM Based' %></span>
+            </div>
+            
+            <!-- CPM Rate -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">💵</span>
+              <span class="text-gray-500">CPM Rate:</span>
+              <span class="font-medium text-green-400">$<%= campaign.rate_per_1k %> / 1k views</span>
+            </div>
+            
+            <!-- Total Budget -->
+            <div class="flex items-center gap-2 text-gray-300">
+              <span class="text-[#E31E24]">💰</span>
+              <span class="text-gray-500">Total Budget:</span>
+              <span class="font-medium"><%= campaign.total_budget ? '$' + campaign.total_budget.toFixed(2) : 'Unlimited' %></span>
+            </div>
+          </div>
+          
+          <!-- Budget Tracker -->
+          <% if (campaign.total_budget && campaign.total_budget > 0) { %>
+            <div class="mb-4">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Budget Tracker</span>
+                <span>$<%= spentBudget.toFixed(2) %> / $<%= campaign.total_budget.toFixed(2) %></span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-[#E31E24] to-[#B91419] transition-all duration-500" style="width: <%= budgetPercent %>%"></div>
+              </div>
+              <div class="text-right text-xs text-gray-500 mt-1">
+                <%= (100 - budgetPercent).toFixed(1) %>% used • $<%= (campaign.total_budget - spentBudget).toFixed(2) %> remaining
+              </div>
+            </div>
+          <% } %>
+          
+          <!-- View Details Button -->
+          <a href="/campaigns/<%= campaign.id %>" class="block w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-center font-semibold rounded-lg transition duration-300 shadow-md hover:shadow-purple-500/50">
+            View Details
+          </a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  
+  <% if (campaigns.length === 0) { %>
+    <div class="text-center py-16">
+      <p class="text-2xl text-gray-500">No active campaigns at the moment</p>
+      <p class="text-gray-600 mt-2">Check back soon for new opportunities!</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

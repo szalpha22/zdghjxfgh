@@ -1,0 +1,194 @@
+<%- include('../partials/header', { user }) %>
+
+<div class="container mx-auto px-6 py-12">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="slide-up mb-12">
+      <h1 class="text-5xl font-black mb-3">
+        <span class="gold-text">🔗 Connected Accounts</span>
+      </h1>
+      <p class="text-xl text-gray-400">Link and verify your social media accounts to increase trust and unlock features</p>
+    </div>
+
+    <!-- Add Account Card -->
+    <div class="glass-card rounded-2xl p-8 mb-8 slide-up delay-1">
+      <h2 class="text-2xl font-bold mb-6 gold-text">➕ Link New Account</h2>
+      
+      <form id="linkAccountForm" class="space-y-6">
+        <div>
+          <label class="block mb-2 font-semibold">Platform</label>
+          <select name="platform" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+            <option value="">Select platform...</option>
+            <option value="YouTube">YouTube</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Instagram">Instagram</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-2 font-semibold">Account Handle / Channel Name</label>
+          <input type="text" name="account_handle" required placeholder="@yourhandle or Your Channel Name" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block mb-2 font-semibold">Account URL</label>
+          <input type="url" name="account_url" required placeholder="https://youtube.com/@yourhandle" class="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg focus:border-[#E31E24] focus:outline-none">
+          <p class="text-sm text-gray-500 mt-1">Full URL to your channel/profile</p>
+        </div>
+
+        <button type="submit" class="w-full py-3 gold-gradient text-black font-bold text-lg rounded-lg hover:opacity-90 transition">
+          Link Account
+        </button>
+      </form>
+    </div>
+
+    <!-- Verification Instructions -->
+    <div id="verificationInstructions" class="glass-card rounded-2xl p-8 mb-8 hidden">
+      <h3 class="text-2xl font-bold mb-4 gold-text">🎯 Verification Steps</h3>
+      <div class="bg-gray-900/50 p-6 rounded-lg mb-4">
+        <p class="text-lg mb-4">Your verification code: <span id="verificationCode" class="gold-text font-bold text-2xl"></span></p>
+      </div>
+      
+      <div class="space-y-4 text-gray-300">
+        <div class="flex items-start space-x-3">
+          <span class="gold-text font-bold text-xl">1.</span>
+          <p>Copy your verification code above</p>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="gold-text font-bold text-xl">2.</span>
+          <div>
+            <p class="mb-2">Post the code in one of these ways:</p>
+            <ul class="list-disc list-inside space-y-1 ml-4 text-gray-400">
+              <li><strong>YouTube:</strong> Add the code to your channel's "About" section or recent video description</li>
+              <li><strong>TikTok:</strong> Add the code to your bio or pin a comment with the code on your latest video</li>
+              <li><strong>Instagram:</strong> Add the code to your bio</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="gold-text font-bold text-xl">3.</span>
+          <p>Click "Submit for Verification" below once you've posted the code</p>
+        </div>
+        <div class="flex items-start space-x-3">
+          <span class="gold-text font-bold text-xl">4.</span>
+          <p>Our team will verify within 24 hours</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connected Accounts List -->
+    <div class="slide-up delay-2">
+      <h2 class="text-2xl font-bold mb-6 gold-text">📱 Your Accounts</h2>
+      
+      <% if (accounts && accounts.length > 0) { %>
+        <div class="space-y-4">
+          <% accounts.forEach((account, index) => { %>
+            <div class="glass-card rounded-2xl p-6 glow-hover slide-up" style="animation-delay: <%= 0.3 + (index * 0.1) %>s;">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <div class="w-16 h-16 gold-gradient rounded-xl flex items-center justify-center text-3xl">
+                    <% if (account.platform === 'YouTube') { %>
+                      📺
+                    <% } else if (account.platform === 'TikTok') { %>
+                      🎵
+                    <% } else if (account.platform === 'Instagram') { %>
+                      📸
+                    <% } %>
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-2 mb-1">
+                      <h3 class="text-xl font-bold"><%= account.platform %></h3>
+                      <% if (account.verification_status === 'verified') { %>
+                        <span class="px-3 py-1 bg-red-500/20 text-[#E31E24] text-sm font-semibold rounded-full flex items-center space-x-1">
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                          </svg>
+                          <span>Verified</span>
+                        </span>
+                      <% } else if (account.verification_status === 'pending_review') { %>
+                        <span class="px-3 py-1 bg-red-500/20 text-[#E31E24] text-sm font-semibold rounded-full">⏳ Pending Review</span>
+                      <% } else { %>
+                        <span class="px-3 py-1 bg-gray-500/20 text-gray-400 text-sm font-semibold rounded-full">⚠️ Not Verified</span>
+                      <% } %>
+                    </div>
+                    <p class="text-gray-400"><%= account.account_handle %></p>
+                    <a href="<%= account.account_url %>" target="_blank" class="text-sm text-blue-400 hover:text-blue-300">View Profile →</a>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <% if (account.verification_status === 'pending') { %>
+                    <button onclick="submitVerification(<%= account.id %>)" class="px-4 py-2 gold-gradient text-black font-semibold rounded-lg hover:opacity-90 transition">
+                      Submit for Verification
+                    </button>
+                  <% } %>
+                  <button onclick="removeAccount(<%= account.id %>)" class="px-4 py-2 bg-red-500/20 text-[#E31E24] font-semibold rounded-lg hover:bg-red-500/30 transition">
+                    Remove
+                  </button>
+                </div>
+              </div>
+              
+              <% if (account.verification_status === 'pending' && account.verification_code) { %>
+                <div class="mt-4 p-4 bg-gray-900/50 rounded-lg">
+                  <p class="text-sm text-gray-400 mb-2">Your verification code:</p>
+                  <p class="gold-text font-bold text-lg"><%= account.verification_code %></p>
+                  <p class="text-sm text-gray-500 mt-2">Post this code in your bio or description, then click "Submit for Verification"</p>
+                </div>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="glass-card rounded-2xl p-12 text-center">
+          <div class="text-6xl mb-4">🔗</div>
+          <p class="text-gray-400 text-lg">No accounts linked yet. Add one above to get started!</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('linkAccountForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  
+  const res = await fetch('/accounts/link', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.fromEntries(formData))
+  });
+  
+  const data = await res.json();
+  
+  if (data.success) {
+    document.getElementById('verificationCode').textContent = data.verificationCode;
+    document.getElementById('verificationInstructions').classList.remove('hidden');
+    alert(data.message);
+    setTimeout(() => window.location.reload(), 2000);
+  } else {
+    alert(data.message);
+  }
+});
+
+async function submitVerification(accountId) {
+  const res = await fetch(`/accounts/verify/${accountId}`, { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) {
+    window.location.reload();
+  }
+}
+
+async function removeAccount(accountId) {
+  if (!confirm('Are you sure you want to remove this account?')) return;
+  
+  const res = await fetch(`/accounts/remove/${accountId}`, { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) {
+    window.location.reload();
+  }
+}
+</script>
+
+<%- include('../partials/footer') %>

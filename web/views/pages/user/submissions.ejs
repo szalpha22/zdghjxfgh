@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Submissions - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-gray-100 min-h-screen">
+  <%- include('../../partials/navbar', { user }) %>
+  
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-[#E31E24]">My Submissions</h1>
+      <a href="/user/submit" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded font-semibold">Submit New Clip</a>
+    </div>
+    
+    <div class="space-y-4">
+      <% if (submissions.length > 0) { %>
+        <% submissions.forEach(sub => { %>
+          <div class="bg-zinc-900 rounded-lg p-6">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="px-3 py-1 rounded text-sm <%= sub.status === 'approved' ? 'bg-[#E31E24]' : sub.status === 'pending' ? 'bg-red-500/30' : 'bg-[#8B0F14]' %>">
+                    <%= sub.status %>
+                  </span>
+                  <span class="text-gray-400"><%= sub.campaign_name %></span>
+                </div>
+                <p class="text-lg font-semibold mb-2"><%= sub.platform %></p>
+                <a href="<%= sub.video_link %>" target="_blank" class="text-[#E31E24] hover:text-[#FF4146] break-all"><%= sub.video_link %></a>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div>
+                    <p class="text-xs text-gray-400">Views</p>
+                    <p class="text-lg font-bold"><%= sub.views || 'Pending' %></p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-400">Rate</p>
+                    <p class="text-lg text-[#E31E24]">$<%= sub.rate_per_1k %>/1K</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-400">Earnings</p>
+                    <p class="text-lg text-[#E31E24]">
+                      <% if (sub.status === 'approved' && sub.views) { %>
+                        $<%= ((sub.views / 1000) * sub.rate_per_1k).toFixed(2) %>
+                      <% } else { %>
+                        $0.00
+                      <% } %>
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-400">Submitted</p>
+                    <p class="text-sm"><%= new Date(sub.submitted_at).toLocaleDateString() %></p>
+                  </div>
+                </div>
+                
+                <% if (sub.analytics_proof) { %>
+                  <a href="<%= sub.analytics_proof %>" target="_blank" class="text-[#E31E24] hover:text-[#FF4146] text-sm mt-2 inline-block">View Proof</a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="bg-zinc-900 rounded-lg p-8 text-center">
+          <p class="text-gray-400 mb-4">You haven't submitted any clips yet</p>
+          <a href="/user/submit" class="bg-[#E31E24] hover:bg-[#B91419] px-6 py-2 rounded inline-block">Submit Your First Clip</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

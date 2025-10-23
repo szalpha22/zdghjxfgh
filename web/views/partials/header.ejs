@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipHub - Create. Clip. Earn.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <style>
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    .slide-up {
+      animation: slide-up 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .gold-gradient {
+      background: linear-gradient(135deg, #E31E24 0%, #B91419 100%);
+    }
+
+    .gold-text {
+      background: linear-gradient(135deg, #E31E24 0%, #B91419 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .glass-card {
+      background: rgba(43, 45, 49, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(227, 30, 36, 0.2);
+    }
+
+    .glow {
+      box-shadow: 0 0 30px rgba(227, 30, 36, 0.4);
+    }
+
+    .glow-hover:hover {
+      box-shadow: 0 0 40px rgba(227, 30, 36, 0.6);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .btn-gold {
+      transition: all 0.3s ease;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(227, 30, 36, 0.5);
+    }
+
+    .shimmer {
+      background-size: 1000px 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+    .delay-6 { animation-delay: 0.6s; }
+
+    body {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white">
+  <!-- Desktop Navigation -->
+  <nav class="desktop-nav glass-card border-b border-gray-800 sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center">
+          <img src="/images/logo.png" alt="ClipHub" class="h-12 w-12">
+        </a>
+        
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="/" class="text-gray-300 hover:text-white transition-colors font-medium">Home</a>
+          <a href="/leaderboard" class="text-gray-300 hover:text-white transition-colors font-medium">Leaderboard</a>
+          <% if (user) { %>
+            <a href="/dashboard" class="text-gray-300 hover:text-white transition-colors font-medium">Dashboard</a>
+            <a href="/campaigns" class="text-gray-300 hover:text-white transition-colors font-medium">Campaigns</a>
+            <a href="/submit" class="text-gray-300 hover:text-white transition-colors font-medium">Submit</a>
+            <a href="/accounts" class="text-gray-300 hover:text-white transition-colors font-medium">Accounts</a>
+            <a href="/payouts" class="text-gray-300 hover:text-white transition-colors font-medium">Payouts</a>
+            <a href="/auth/logout" class="px-6 py-2 rounded-lg font-semibold transition-colors" style="background: #E31E24; color: white;">Logout</a>
+          <% } else { %>
+            <a href="/login" class="px-6 py-2 gold-gradient text-black font-bold rounded-lg btn-gold">Login</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>

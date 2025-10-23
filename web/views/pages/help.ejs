@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Center - ClipHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+</head>
+<body class="bg-black text-white min-h-screen">
+  <%- include('../partials/header') %>
+
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-4xl mx-auto">
+      <!-- Page Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
+          Help Center
+        </h1>
+        <p class="text-xl text-gray-400">Get answers to your questions about ClipHub</p>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="mb-12">
+        <div class="relative">
+          <input 
+            type="text" 
+            placeholder="Search for help..." 
+            class="w-full px-6 py-4 bg-gray-900 border border-gray-800 rounded-lg focus:outline-none focus:border-[#E31E24] text-white"
+          >
+          <svg class="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- FAQ Sections -->
+      <div class="space-y-6">
+        <!-- Getting Started -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+          <button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800 transition-colors">
+            <h2 class="text-xl font-bold text-white">Getting Started</h2>
+            <svg class="w-6 h-6 text-[#E31E24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="px-6 pb-6 space-y-4">
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">How do I join ClipHub?</h3>
+              <p class="text-gray-400">Click the "Login" button and authenticate with your Discord account. Once logged in, you can start participating in campaigns.</p>
+            </div>
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">How do I verify my social media accounts?</h3>
+              <p class="text-gray-400">Go to the Accounts page, link your YouTube, TikTok, Instagram, or Twitter account, and follow the verification process. You'll need to add a verification code to your account bio temporarily.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campaigns -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+          <button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800 transition-colors">
+            <h2 class="text-xl font-bold text-white">Campaigns</h2>
+            <svg class="w-6 h-6 text-[#E31E24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="px-6 pb-6 space-y-4">
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">What are campaigns?</h3>
+              <p class="text-gray-400">Campaigns are earning opportunities where you create and submit clips from specified content. Each campaign has specific requirements and pays based on views.</p>
+            </div>
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">How do I submit clips?</h3>
+              <p class="text-gray-400">Navigate to an active campaign, click "Submit Clip", provide your video link and analytics proof, and submit for review. Our system automatically tracks your views.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Earnings & Payouts -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+          <button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800 transition-colors">
+            <h2 class="text-xl font-bold text-white">Earnings & Payouts</h2>
+            <svg class="w-6 h-6 text-[#E31E24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="px-6 pb-6 space-y-4">
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">How do I get paid?</h3>
+              <p class="text-gray-400">Once your submissions are approved and reach the minimum payout threshold, go to the Payouts page and request a payout. Provide your payment method and proof of analytics.</p>
+            </div>
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">When will I receive my payment?</h3>
+              <p class="text-gray-400">Payouts are typically processed within 3-7 business days after approval. You'll be notified via Discord when your payout is approved or if additional information is needed.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account & Verification -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+          <button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800 transition-colors">
+            <h2 class="text-xl font-bold text-white">Account & Verification</h2>
+            <svg class="w-6 h-6 text-[#E31E24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="px-6 pb-6 space-y-4">
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">Why do I need to verify my accounts?</h3>
+              <p class="text-gray-400">Account verification ensures that submissions are legitimate and prevents fraud. Only verified accounts can participate in campaigns.</p>
+            </div>
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">My verification is pending. What should I do?</h3>
+              <p class="text-gray-400">Our system automatically checks pending verifications every 30 minutes. If automatic verification fails, a support ticket will be created for manual review. You can also contact our team via Discord.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+          <button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-800 transition-colors">
+            <h2 class="text-xl font-bold text-white">Troubleshooting</h2>
+            <svg class="w-6 h-6 text-[#E31E24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="px-6 pb-6 space-y-4">
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">My submission was rejected. Why?</h3>
+              <p class="text-gray-400">Submissions can be rejected for violating campaign requirements, low quality, or fraudulent analytics. Check the rejection reason and contact support if you believe it was a mistake.</p>
+            </div>
+            <div class="pt-4 border-t border-gray-800">
+              <h3 class="font-semibold text-[#E31E24] mb-2">I can't log in. What should I do?</h3>
+              <p class="text-gray-400">Make sure you're using the correct Discord account. Clear your browser cache and cookies, then try again. If the problem persists, contact our support team.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support -->
+      <div class="mt-12 bg-gradient-to-r from-red-900/20 to-red-800/20 border border-red-800/30 rounded-lg p-8 text-center">
+        <h2 class="text-2xl font-bold mb-4">Still need help?</h2>
+        <p class="text-gray-400 mb-6">Join our Discord community and get support from our team</p>
+        <a href="https://discord.gg/GpwemE5Edg" target="_blank" class="inline-flex items-center gap-2 px-8 py-3 bg-[#E31E24] hover:bg-[#B91419] text-white font-semibold rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+          </svg>
+          Join Discord Support
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

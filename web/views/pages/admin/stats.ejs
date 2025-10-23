@@ -1,0 +1,88 @@
+<%- include('../../partials/header', { user }) %>
+
+<%- include('../../partials/admin-nav', { currentPage: 'stats' }) %>
+
+<div class="bg-zinc-950 text-gray-100 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[#E31E24] mb-6">Platform Statistics</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Total Users</h3>
+        <p class="text-3xl font-bold text-[#E31E24]"><%= overallStats.totalUsers.count %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Total Submissions</h3>
+        <p class="text-3xl font-bold text-[#E31E24]"><%= overallStats.totalSubmissions.count %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Total Views</h3>
+        <p class="text-3xl font-bold text-[#E31E24]"><%= (overallStats.totalViews.total || 0).toLocaleString() %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Active Campaigns</h3>
+        <p class="text-3xl font-bold text-[#E31E24]"><%= overallStats.totalCampaigns.count %></p>
+      </div>
+      <div class="bg-zinc-900 rounded-lg p-6">
+        <h3 class="text-gray-400 mb-2">Total Earnings Paid</h3>
+        <p class="text-3xl font-bold text-[#E31E24]">$<%= (overallStats.totalEarnings.total || 0).toFixed(2) %></p>
+      </div>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Campaign Performance</h2>
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-zinc-800">
+            <th class="text-left py-2">Campaign</th>
+            <th class="text-left py-2">Members</th>
+            <th class="text-left py-2">Submissions</th>
+            <th class="text-left py-2">Views</th>
+            <th class="text-left py-2">Budget</th>
+            <th class="text-left py-2">Spent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% campaignStats.forEach(c => { %>
+            <tr class="border-b border-zinc-800">
+              <td class="py-2"><%= c.name %></td>
+              <td class="py-2"><%= c.members %></td>
+              <td class="py-2"><%= c.submissions %></td>
+              <td class="py-2"><%= c.total_views.toLocaleString() %></td>
+              <td class="py-2">$<%= c.total_budget || 0 %></td>
+              <td class="py-2 text-[#E31E24]">$<%= (c.budget_spent || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="bg-zinc-900 rounded-lg p-6">
+      <h2 class="text-xl font-bold text-[#E31E24] mb-4">Top Users by Views</h2>
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-zinc-800">
+            <th class="text-left py-2">Rank</th>
+            <th class="text-left py-2">Username</th>
+            <th class="text-left py-2">Submissions</th>
+            <th class="text-left py-2">Total Views</th>
+            <th class="text-left py-2">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% topUsers.forEach((u, i) => { %>
+            <tr class="border-b border-zinc-800">
+              <td class="py-2 text-[#E31E24] font-bold">#<%= i + 1 %></td>
+              <td class="py-2"><%= u.username %></td>
+              <td class="py-2"><%= u.submissions %></td>
+              <td class="py-2"><%= u.total_views.toLocaleString() %></td>
+              <td class="py-2 text-[#E31E24]">$<%= (u.balance || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer', { user }) %>
